@@ -1,0 +1,6 @@
+Dworzec ul.Dworcowa120 czynny
+Tuwima ul.Tuwima32 nieczynny
+Cezara ul.Augusta15 czynny
+Dawida ul.Dawida9 czynny
+Goliata ul.Goliata1 czynny
+Brutusa ul.Brutusa4 czynny
