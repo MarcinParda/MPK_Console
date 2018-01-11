@@ -52,11 +52,12 @@ void wyswietl_menu_glowne()
 
 	cout << "1. Wyswietl wszystkie linie" << endl;
 	cout << "2. Wyswietl rozklad linii" << endl;
-	cout << "3. Wyswietl rozklady przystankow" << endl;
+	cout << "3. Wyswietl liste przystankow" << endl;
 	cout << "4. Wyswietl rozklad przystanku" << endl;
-	cout << "5. Wyswietl mape miasta" << endl;
-	cout << "6. Zaloguj sie na konto administratora" << endl;
-	cout << "7. Zamknij system" << endl;
+	cout << "5. Pokaz polaczenia" << endl;
+	cout << "6. Wyswietl mape miasta" << endl;
+	cout << "7. Zaloguj sie na konto administratora" << endl;
+	cout << "8. Zamknij system" << endl;
 }
 
 struct Rozklad{
@@ -64,6 +65,10 @@ struct Rozklad{
 	string godzina_odjazdu;
 	string w_ktora_strone;
 };
+
+vector<string>dane_z_pliku_rozklady = wczytywanie_wyrazow_do_wektora("rozklad_przystankow.txt"); //Wczytywanie danych z pliku przystanki txt i zapisywanie ich do tablicy struktur rozklad
+
+
 
 class Przystanek {
 	static int licznik;
@@ -81,7 +86,6 @@ public:
 		adres = t_adres;
 		czyCzynny = t_czyCzynny;
 		//wczytywanie z pliku danych o rozkladzie linii
-		vector<string>dane_z_pliku_rozklady = wczytywanie_wyrazow_do_wektora("rozklad_przystankow.txt"); //Wczytywanie danych z pliku przystanki txt i zapisywanie ich do tablicy struktur rozklad
 		for (int i = 0; i < dane_z_pliku_rozklady.size(); i+=4)
 		{
 			if (nazwa == dane_z_pliku_rozklady[i]){
@@ -299,7 +303,7 @@ int main()
 	char znak;
 	znak = getchar();
 
-	while (znak != '7') {
+	while (znak != '8') {
 		switch (znak) {
 		case '1':
 			MPK_Olsztyn.wyswietl_liste_linii();
@@ -323,6 +327,9 @@ int main()
 			czekaj_na_klawisz();
 			break;
 		case '6':
+			czekaj_na_klawisz();
+			break;
+		case '7':
 			czekaj_na_klawisz();
 			break;
 		}
