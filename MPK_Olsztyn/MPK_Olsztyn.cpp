@@ -1,4 +1,4 @@
-// MPK_Olsztyn.cpp : Defines the entry point for the console application.
+// Projekt konsolowej strony obslugujacej klijentow linii MPK
 //
 
 #include "stdafx.h"
@@ -62,7 +62,7 @@ void wyswietl_menu_glowne()
 struct Rozklad{
 	int linia;
 	string godzina_odjazdu;
-	bool w_ktora_strone;
+	string w_ktora_strone;
 };
 
 class Przystanek {
@@ -88,7 +88,7 @@ public:
 				Rozklad rozklad;
 				rozklad.linia = atoi(dane_z_pliku_rozklady[i + 1].data());
 				rozklad.godzina_odjazdu = dane_z_pliku_rozklady[i + 2];
-				rozklad.w_ktora_strone = StringToBool(dane_z_pliku_rozklady[i + 3]);
+				rozklad.w_ktora_strone = dane_z_pliku_rozklady[i + 3];
 				rozklady.push_back(rozklad);
 			}
 		}
@@ -97,7 +97,11 @@ public:
 	void wyswietl_rozklad() {
 		for (int i = 0; i < rozklady.size(); i++)
 		{
-			cout << "Linia " << rozklady[i].linia << " wyjezdza o godzinie " << rozklady[i].godzina_odjazdu << " w kierunku " << rozklady[i].w_ktora_strone << endl;
+			cout << "Linia " << rozklady[i].linia;
+			if (rozklady[i].w_ktora_strone != "Koncowy")
+				cout << " wyjezdza o godzinie " << rozklady[i].godzina_odjazdu << " w kierunku " << rozklady[i].w_ktora_strone << endl;
+			else
+				cout << " przyjezdza o godzinie " << rozklady[i].godzina_odjazdu << " Przystanek koncowy " << endl;
 		}
 		cout << endl;
 	}
