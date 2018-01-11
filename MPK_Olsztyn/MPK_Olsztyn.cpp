@@ -257,6 +257,38 @@ public:
 		else
 			cout << "Taki przystanek nie istnieje" << endl << endl;
 	}
+
+	void polaczenia() {
+		czekaj_na_klawisz();
+		bool czyJestPoloczenie = false;
+		cout << endl << "Podaj przystanki, ktorych polaczenie chcesz zobaczyc" << endl;
+		string przystanek1, przystanek2;
+		cin >> przystanek1; 
+		cin >> przystanek2;
+
+		for (int i = 0; i < linie.size(); i++)
+		{
+			for (int j = 0; j < linie[i].ile_przystankow; j++)
+			{
+				if (linie[i].ktore_przystanki[j] == przystanek1) {
+					for (int k = 0; k < linie[i].ile_przystankow; k++)
+					{
+						if (linie[i].ktore_przystanki[k] == przystanek2) {
+							if (!czyJestPoloczenie)
+								cout << "Przez te dwa przystanki jada linie nr: ";
+							cout << linie[i].nr_linii << " ";
+							czyJestPoloczenie = true;
+						}
+					}
+				}
+			}
+		}
+		if (!czyJestPoloczenie)
+			cout << endl << "Nie ma polaczen miedzy przystankami" << endl;
+
+		cout << endl;
+
+	}
 };
 
 
@@ -323,7 +355,10 @@ int main()
 		case '4':
 			MPK_Olsztyn.wyswietl_rozklad_przystanku();
 			czekaj_na_klawisz();
+			czekaj_na_klawisz();
 		case '5':
+			MPK_Olsztyn.polaczenia();
+			czekaj_na_klawisz();
 			czekaj_na_klawisz();
 			break;
 		case '6':
