@@ -8,6 +8,7 @@
 #include <fstream>
 using namespace std;
 
+bool zalogowano = false;
 
 void czekaj_na_klawisz() {
 	getchar();
@@ -19,6 +20,15 @@ void wyswietl(vector<string>tab) {
 	{
 		cout << tab[i] << " ";
 	}
+}
+
+bool czyNalezyString(vector<string>tab,string nazwa,int od_ilu_zaczac,int o_ile_inkrementowac) {
+	for (int i = od_ilu_zaczac; i < tab.size(); i+=o_ile_inkrementowac)
+	{
+		if (tab[i] == nazwa)
+			return true;
+	}
+	return false;
 }
 
 bool StringToBool(string napis)
@@ -48,16 +58,31 @@ vector<string>wczytywanie_wyrazow_do_wektora(string lokalizacja_pliku) {
 
 void wyswietl_menu_glowne()
 {
-	cout << "Wybierz akcje:" << endl;
+	if (!zalogowano) {
+		cout << "Wybierz akcje:" << endl;
 
-	cout << "1. Wyswietl wszystkie linie" << endl;
-	cout << "2. Wyswietl rozklad linii" << endl;
-	cout << "3. Wyswietl liste przystankow" << endl;
-	cout << "4. Wyswietl rozklad przystanku" << endl;
-	cout << "5. Pokaz polaczenia" << endl;
-	cout << "6. Wyswietl mape miasta" << endl;
-	cout << "7. Zaloguj sie na konto administratora" << endl;
-	cout << "8. Zamknij system" << endl;
+		cout << "1. Wyswietl wszystkie linie" << endl;
+		cout << "2. Wyswietl rozklad linii" << endl;
+		cout << "3. Wyswietl liste przystankow" << endl;
+		cout << "4. Wyswietl rozklad przystanku" << endl;
+		cout << "5. Pokaz polaczenia pomiedzy przystankami" << endl;
+		cout << "6. Wyswietl mape miasta" << endl;
+		cout << "7. Zaloguj sie na konto administratora" << endl;
+		cout << "8. Zamknij system" << endl << endl;
+	}
+	else {
+		cout << "Wybierz akcje:" << endl;
+
+		cout << "1. Wyswietl wszystkie linie" << endl;
+		cout << "2. Wyswietl rozklad linii" << endl;
+		cout << "3. Wyswietl liste przystankow" << endl;
+		cout << "4. Wyswietl rozklad przystanku" << endl;
+		cout << "5. Pokaz polaczenia pomiedzy przystankami" << endl;
+		cout << "6. Wyswietl mape miasta" << endl;
+		cout << "7. Dodaj nowy przystanek" << endl;
+		cout << "8. Dodaj nowa linie" << endl;
+		cout << "9. Wyloguj sie" << endl << endl;
+	}
 }
 
 struct Rozklad{
@@ -291,10 +316,32 @@ public:
 	}
 };
 
+bool logowanie() {
 
+	vector<string>dane = wczytywanie_wyrazow_do_wektora("hasla.txt");
+	cout << endl << "Podaj nazwe uzytkownika: " << endl;
+	string nazwa_uzytkownika;
+	cin >> nazwa_uzytkownika;
 
-
-
+	if (czyNalezyString(dane, nazwa_uzytkownika, 0, 2)) {
+		cout <<  endl << "Podaj haslo" << endl;
+		string haslo;
+		cin >> haslo;
+		if (czyNalezyString(dane, haslo, 1, 2)) {
+			cout << endl << "Zalogowano" << endl;
+			return true;
+		}
+		else {
+			cout << endl << "Zle haslo" << endl;
+			return false;
+		}
+	}
+	else {
+		cout << endl << "Nie ma takiego uzytkownika" << endl;
+		return false;
+	}
+	return false;
+}
 
 int main()
 {
@@ -363,9 +410,57 @@ int main()
 			break;
 		case '6':
 			czekaj_na_klawisz();
+			czekaj_na_klawisz();
 			break;
 		case '7':
-			czekaj_na_klawisz();
+			zalogowano = logowanie();
+			if (zalogowano)
+			{
+				while (znak != '9') {
+					switch (znak) {
+					case '1':
+						MPK_Olsztyn.wyswietl_liste_linii();
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					case '2':
+						MPK_Olsztyn.wyswietl_rozklad_lini();
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					case '3':
+						MPK_Olsztyn.wyswietl_liste_przystankow();
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					case '4':
+						MPK_Olsztyn.wyswietl_rozklad_przystanku();
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+					case '5':
+						MPK_Olsztyn.polaczenia();
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					case '6':
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					case '7':
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					case '8':
+						czekaj_na_klawisz();
+						czekaj_na_klawisz();
+						break;
+					}
+					wyswietl_menu_glowne();
+					znak = getchar();
+				}
+				zalogowano = false;
+				czekaj_na_klawisz();
+			}
 			break;
 		}
 		wyswietl_menu_glowne();
