@@ -1,2 +1,2 @@
-103 3 dwupietrowy Dworzec Cezara Brutusa
-104 6 jednopietrowy Dworzec Tuwima Dawida Cezara Goliata Brutusa
+103 3 autobus Dworzec Cezara Brutusa
+104 6 autobus Dworzec Tuwima Dawida Cezara Goliata Brutusa
