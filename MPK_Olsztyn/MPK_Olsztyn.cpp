@@ -335,7 +335,7 @@ bool logowanie() {
 		string haslo;
 		cin >> haslo;
 		if (czyNalezyString(dane, haslo, 1, 2)) {
-			cout << endl << "Zalogowano" << endl;
+			cout << endl << "Zalogowano" << endl << endl;
 			return true;
 		}
 		else {
@@ -350,11 +350,9 @@ bool logowanie() {
 	return false;
 }
 
-Przystanek nowy_przystanek() {
+Przystanek nowy_przystanek(string nazwa) {
 	Przystanek wynik("","",0);
-
-	cout << endl << "Podaj nazwe przystanku" << endl;
-	cin >> wynik.nazwa;
+	wynik.nazwa = nazwa;
 
 	cout << endl << "Podaj adres przystanku" << endl;
 	cin >> wynik.adres;
@@ -365,12 +363,32 @@ Przystanek nowy_przystanek() {
 	return wynik;
 }
 
-Linia nowa_linia() {
+void dodaj_nowy_przystanek() {
+	cout << endl << "Podaj nazwe przystanku" << endl;
+	string nazwa;
+	cin >> nazwa;
+
+	bool czyIstniejeNazwa = false;
+	for (int i = 0; i < przystanki.size(); i++)
+	{
+		if (przystanki[i].nazwa == nazwa) {
+			czyIstniejeNazwa = true;
+		}
+	}
+	if (!czyIstniejeNazwa) {
+		przystanki.push_back(nowy_przystanek(nazwa));
+		cout << endl << "Dodano nowy przystanek" << endl;
+	}
+	else {
+		cout << endl << "Taka nazwa przystanku juz istnieje" << endl;
+	}
+}
+
+Linia nowa_linia(int nr_linii) {
 	vector<string>nazwy_przystankow;
 	Linia wynik(0, 0, "", nazwy_przystankow);
 
-	cout << endl << "Podaj nr nowej linii" << endl;
-	cin >> wynik.nr_linii;
+	wynik.nr_linii = nr_linii;
 
 	cout << endl << "Ile przystankow ma miec nowa linia" << endl;
 	cin >> wynik.ile_przystankow;
@@ -381,19 +399,54 @@ Linia nowa_linia() {
 
 	for (int i = 0; i < wynik.ile_przystankow; i++)
 	{
+		bool znaleziono_przystanek = false;
 		string nazwa_przystanku;
-		if (i == 0)
-			cout << "Podaj przystanek poczatkowy" << endl;
-		else if(i==wynik.ile_przystankow-1)
-			cout << "Podaj przystanek koncowy" << endl;
-		else
-			cout << "Podaj przystanek nr " << i+1 << endl;
+		do {
+			if (i == 0)
+				cout << "Podaj przystanek poczatkowy" << endl;
+			else if (i == wynik.ile_przystankow - 1)
+				cout << "Podaj przystanek koncowy" << endl;
+			else
+				cout << "Podaj przystanek nr " << i + 1 << endl;
 
-		cin >> nazwa_przystanku;
+			cin >> nazwa_przystanku;
+			for (int i = 0; i < przystanki.size(); i++)
+			{
+				if (przystanki[i].nazwa == nazwa_przystanku) {
+					znaleziono_przystanek = true;
+					break;
+				}
+			}
+			if (!znaleziono_przystanek)
+				cout << endl << "Taki przystanek nie istnieje" << endl;
+
+		} while (!znaleziono_przystanek);
 		wynik.ktore_przystanki.push_back(nazwa_przystanku);
 	}
 
 	return wynik;
+}
+
+void dodaj_nowa_linie() {
+	cout << endl << "Podaj nr nowej linii" << endl;
+	int nr_linii;
+	cin >> nr_linii;
+
+	bool czyIstniejeLinia = false;
+
+	for (int i = 0; i < MPK_Olsztyn.linie.size(); i++){
+		if (MPK_Olsztyn.linie[i].nr_linii == nr_linii){
+			czyIstniejeLinia = true;
+		}
+	}
+
+	if (!czyIstniejeLinia) {
+		MPK_Olsztyn.linie.push_back(nowa_linia(nr_linii));
+		cout << endl << "Dodano nowa linie" << endl;
+	}
+	else {
+		cout << endl << "Taka linia juz istnieje" << endl;
+	}
 }
 
 void nowy_rozklad(string nazwa_przystanku) {
@@ -401,37 +454,76 @@ void nowy_rozklad(string nazwa_przystanku) {
 
 	cout << endl << "Jaka linia przejezdza przez ten przystanek" << endl;
 	cin >> rozklad.linia;
-
-	cout << endl << "O ktorej godzinie linia przejezdza przez ten przystanek" << endl;
-	cin >> rozklad.godzina_odjazdu;
-
-	cout << endl << "Czy jest to przystanek koncowy linii " << rozklad.linia <<  "? (Wpisz 1 jesli tak lub 0 jesli nie)" << endl;
-	bool yorn;
-	cin >> yorn;
-	if (yorn)
-		rozklad.w_ktora_strone = "Koncowy";
-	else {
-		for (int i = 0; i < MPK_Olsztyn.linie.size(); i++)
-		{
-			if (rozklad.linia == MPK_Olsztyn.linie[i].nr_linii) {
-				cout << "Jesli to glowna trasa wpisz 1 jesli powrotna wpisz 0" << endl;
-				cin >> yorn;
-				if (yorn) 
-					rozklad.w_ktora_strone = MPK_Olsztyn.linie[i].ktore_przystanki[MPK_Olsztyn.linie[i].ile_przystankow - 1]; //przypisuje ostatni przystanek danej linii zmiennej w_ktora_strone
-				else
-					rozklad.w_ktora_strone = MPK_Olsztyn.linie[i].ktore_przystanki[0]; //przypisuje pierwszy przystanek danej linii zmiennej w_ktora_strone
-				break;
-			}
-
-		}
-	}
-	//TO DO sprawdzic tam, gdzie przystanki, rozklady, linie moga nie istniec
-	for (int i = 0; i < przystanki.size(); i++)
+	bool czyNalezy = false;
+	for (int i = 0; i < MPK_Olsztyn.linie.size(); i++)
 	{
-		if (nazwa_przystanku == przystanki[i].nazwa) {
-			przystanki[i].rozklady.push_back(rozklad);
+		if (MPK_Olsztyn.linie[i].nr_linii == rozklad.linia) {
+			czyNalezy = true;
 			break;
 		}
+		czyNalezy = false;
+	}
+
+	if (czyNalezy) {
+		cout << endl << "O ktorej godzinie linia przejezdza przez ten przystanek" << endl;
+		cin >> rozklad.godzina_odjazdu;
+
+		cout << endl << "Czy jest to przystanek koncowy linii " << rozklad.linia << "? (Wpisz 1 jesli tak lub 0 jesli nie)" << endl;
+		bool yorn;
+		cin >> yorn;
+		if (yorn)
+			rozklad.w_ktora_strone = "Koncowy";
+		else {
+			for (int i = 0; i < MPK_Olsztyn.linie.size(); i++)
+			{
+				if (rozklad.linia == MPK_Olsztyn.linie[i].nr_linii) {
+					cout << "Jesli to glowna trasa wpisz 1 jesli powrotna wpisz 0" << endl;
+					cin >> yorn;
+					if (yorn)
+						rozklad.w_ktora_strone = MPK_Olsztyn.linie[i].ktore_przystanki[MPK_Olsztyn.linie[i].ile_przystankow - 1]; //przypisuje ostatni przystanek danej linii zmiennej w_ktora_strone
+					else
+						rozklad.w_ktora_strone = MPK_Olsztyn.linie[i].ktore_przystanki[0]; //przypisuje pierwszy przystanek danej linii zmiennej w_ktora_strone
+					break;
+				}
+
+			}
+		}
+		//TO DO sprawdzic tam, gdzie przystanki, rozklady, linie moga nie istniec
+		for (int i = 0; i < przystanki.size(); i++)
+		{
+			if (nazwa_przystanku == przystanki[i].nazwa) {
+				przystanki[i].rozklady.push_back(rozklad);
+				cout << endl << "Dodano nowy rozklad" << endl;
+				break;
+			}
+		}
+	}
+	else {
+		cout << endl << "Taka linia nie istnieje" << endl;
+	}
+	
+}
+
+void dodaj_nowy_rozklad() {
+	string nazwa_przystanku;
+	cout << endl << "Podaj nazwe przystanku do ktorego chcesz dodac nowy rozklad" << endl;
+	cin >> nazwa_przystanku;
+	bool czyNalezy = false;
+	for (int i = 0; i < przystanki.size(); i++)
+	{
+		if (przystanki[i].nazwa == nazwa_przystanku) {
+			czyNalezy = true;
+			break;
+		}
+	}
+	if (czyNalezy) {
+		nowy_rozklad(nazwa_przystanku);
+
+		cout << endl << "Dodano nowy przystanek" << endl;
+
+	}
+	else {
+		cout << endl << "Taki przystanek nie istnieje" << endl;
 	}
 }
 
@@ -504,6 +596,7 @@ int main()
 			break;
 		case '7':
 			zalogowano = logowanie();
+			czekaj_na_klawisz();
 			wyswietl_menu_glowne();
 			znak = getchar();
 			if (zalogowano)
@@ -540,23 +633,17 @@ int main()
 						czekaj_na_klawisz();
 						break;
 					case '7':
-						przystanki.push_back(nowy_przystanek());
-						cout << endl << "Dodano nowy przystanek" << endl;
+						dodaj_nowy_przystanek();
 						czekaj_na_klawisz();
 						czekaj_na_klawisz();
 						break;
 					case '8':
-						MPK_Olsztyn.linie.push_back(nowa_linia());
-						cout << endl << "Dodano nowa linie" << endl;
+						dodaj_nowa_linie();
 						czekaj_na_klawisz();
 						czekaj_na_klawisz();
 						break;
 					case '9':
-						string nazwa_przystanku;
-						cout << endl << "Podaj nazwe przystanku do ktorego chcesz dodac nowy rozklad" << endl;
-						cin >> nazwa_przystanku;
-						nowy_rozklad(nazwa_przystanku);
-						cout << endl << "Dodano nowy rozklad" << endl;
+						dodaj_nowy_rozklad();
 						czekaj_na_klawisz();
 						czekaj_na_klawisz();
 						break;
